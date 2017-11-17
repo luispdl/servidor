@@ -26,12 +26,12 @@
     }
   } else {
     http_response_code(403);
-    echo "Token no enviado";
+    echo json_encode(["mensaje" => "Token no enviado"]);
     die();
   }
   if($validar["error"]) {
     http_response_code(403);
-    echo json_encode($validar);
+    echo json_encode(["mensaje" => $validar]);
     die();
   }
 
@@ -41,7 +41,7 @@
     if($datos->tipo_usuario == 1) {
       if ($datos->legajo != $legajo){
         http_response_code(403);
-        echo json_encode(["error" => "Legajo no coincide con el usuario"]);
+        echo json_encode(["mensaje" => "Legajo no coincide con el usuario"]);
         die();
       }
     }

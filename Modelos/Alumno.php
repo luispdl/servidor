@@ -2,7 +2,6 @@
 
 use Modelos\Carrera;
 use Modelos\Materia;
-use Modelos\Conexion;
 
 	class Alumno
 	{
@@ -43,14 +42,16 @@ use Modelos\Conexion;
 
 			$sql = "CALL sp_materias_a_rendir($this->legajo)";
 
-			$resultado = $this->con->consultaRetorno($sql);
+			if($resultado = $this->con->consultaRetorno($sql)){
 
-			while($row = mysqli_fetch_object($resultado)){
-				$disponibles[$row->codigo_carrera]["nombre_carrera"] = $row->nombre_carrera;
-				$disponibles[$row->codigo_carrera]["codigo_carrera"] = $row->codigo_carrera;
-				$disponibles[$row->codigo_carrera]["materias"][] =$row;
+				while($row = mysqli_fetch_object($resultado)){
+					$disponibles[$row->codigo_carrera]["nombre_carrera"] = $row->nombre_carrera;
+					$disponibles[$row->codigo_carrera]["codigo_carrera"] = $row->codigo_carrera;
+					$disponibles[$row->codigo_carrera]["materias"][] =$row;
 
+				}
 			}
+
 
 			return $disponibles;
 		}

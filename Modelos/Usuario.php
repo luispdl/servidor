@@ -1,7 +1,5 @@
 <?php namespace Modelos;
 
-use Modelos\Conexion;
-
 	class Usuario {
 
 		public $nombre;
@@ -16,7 +14,7 @@ use Modelos\Conexion;
 		}
 
 		public static function obtenerPassword($usuario) {
-			$con = new Conexion();
+			$con = New Conexion();
 			$sql = "SELECT password, nombre_cuenta_usuario, primer_ingreso FROM usuarios WHERE nombre_cuenta_usuario = '$usuario'";
 			$resultado = $con->consultaRetorno($sql);
 			if(mysqli_num_rows($resultado)){
@@ -28,9 +26,9 @@ use Modelos\Conexion;
 
 		}
 
-		public static function registrarAlumno ($legajo, $nombre_usuario, $password) {
+		public static function registrarAlumno ($legajo, $nombre_usuario, $password, $ID_rol, $email) {
 			$con = new Conexion();
-			$sql = "UPDATE usuarios SET nombre_cuenta_usuario = '$nombre_usuario', password = '$password', primer_ingreso = 0 WHERE ID_usuarioAlumno = $legajo";
+			$sql = "INSERT usuarios (nombre_cuenta_usuario, password, 	correoElectronico, legajo, ID_rol ) VALUES ('$nombre_usuario', '$password', '$email', $legajo, $ID_rol)";
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado) {
 				return true;
@@ -41,32 +39,49 @@ use Modelos\Conexion;
 
 		public static function obtenerDatos($nombre_usuario) {
 			$con = new Conexion();
-			$sql = "SELECT u.ID_usuarioAlumno, u.ID_usuarioPreceptor, u.nombre_cuenta_usuario, u.ID_rol, a.legajo, a.nombre as alumno_nombre, a.apellido as alumno_apellido, p.ID_preceptor, p.nombre AS preceptor_nombre, p.apellido AS preceptor_apellido from usuarios u
-			LEFT JOIN alumnos a ON a.legajo = u.ID_usuarioAlumno
-			LEFT JOIN preceptores p ON p.ID_preceptor = u.ID_usuarioPreceptor
-			WHERE u.nombre_cuenta_usuario = '$nombre_usuario'";
+			$sql = "SELECT u.legajo, u.ID_rol, u.nombre_cuenta_usuario, u.correoElectronico, a.nombre, a.apellido FROM usuarios u LEFT JOIN alumnos a ON a.legajo = u.legajo WHERE u.nombre_cuenta_usuario = '$nombre_usuario'";
 			$resultado = $con->consultaRetorno($sql);
 			if($row = mysqli_fetch_object($resultado)) {
 				if($row->ID_rol == 1){
 					return [
 						"legajo" => $row->legajo,
-						"apellido" => $row->alumno_apellido,
-						"nombre" => $row->alumno_nombre,
-						"tipo_usuario" => $row->ID_rol
+						"apellido" => $row->apellido,
+						"nombre" => $row->nombre,
+						"tipo_usuario" => $row->ID_rol,
+						"nombre_usuario" => $row->nombre_cuenta_usuario,
+						"email" => $row->correoElectronico
 					];
 				} else {
 					return [
-						"id_preceptor" => $row->ID_usuarioPreceptor,
-						"apellido" => $row->preceptor_apellido,
-						"nombre" => $row->preceptor_nombre,
-						"tipo_usuario" => $row->ID_rol
+						"nombre_usuario" => $row->nombre_cuenta_usuario,
+						"tipo_usuario" => $row->ID_rol,
+						"email" => $row->correoElectronico
 					];
 				}
 			}
 		}
 
-		public function login() {
-
+		public function login($usuario, $password) {
+			$con = new Conexion();
+			$sql = "SELECT password FROM usuarios WHERE nombre_cuenta_usuario = '$usuario'";
+			$resultado = $con->consultaRetorno($sql);
+			if($resultado->num_rows != 0) {
+				$row = mysqli_fetch_object($resultado);
+				if (password_verify($password, $row->password)){
+					return ["estado" => "iniciar"];
+				} else {
+					return ["estado" => "error", "mensaje" => "Datos incorrectos"];
+				}
+			} else {
+				$sql = "SELECT 1 FROM alumnos WHERE numero_documento = '$usuario' and numero_documento = '$password'";
+				return $sql;
+				$resultado = $con->consultaRetorno($sql);
+				if($resultado->num_rows != 0){
+					return ["estado" => "registrar"];
+				} else {
+					return ["estado" => "error", "mensaje" => "Datos incorrectos"];
+				}
+			}
 		}
 
 		public static function importarDeAlumnos() {

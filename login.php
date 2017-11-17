@@ -8,25 +8,24 @@
 	header('Content-Type: application/json');
 
 	$usuario = $_POST["usuario"];
-	$validacion = Usuario::obtenerPassword($usuario);
-	if ($validacion) {
-		$passwordAlumno = $validacion["password"];
-		$primer_ingreso = $validacion["primer_ingreso"];
-		$nombre_usuario = $validacion["nombre_usuario"];
-		$token = null;
-		if (password_verify($_POST["password"], $passwordAlumno)){
-			if(!$primer_ingreso) {
-				$datos_usuario = Usuario::obtenerDatos($nombre_usuario);
-				$token = 	Auth::autenticar($datos_usuario);
-			}
-			echo json_encode(["datos" => $datos_usuario, "nombre_usuario" => $nombre_usuario, "primer_ingreso" => !$primer_ingreso, "token" => $token]);
+	$password = $_POST["password"];
+	$logueo = Usuario::login($usuario, $password);
+	if($logueo){
+		if($logueo["estado"] == "error"){
+			http_response_code(400);
+			echo json_encode(["mensaje" => $logueo["mensaje"]]);
 		} else {
-			http_response_code(400);
-			echo json_encode(["mensaje" => "Datos incorrectos"]);
+			if($logueo["estado"] == "iniciar"){
+				$datos = Usuario::obtenerDatos($usuario);
+				$token = Auth::autenticar($datos);
+				echo json_encode(["estado" => $logueo["estado"], "datos" => $datos, "token" => $token]);
+			} else {
+				echo json_encode($logueo);
+			}
 		}
-	}	else {
-			http_response_code(400);
-			echo json_encode(["mensaje" => "Datos incorrectos"]);
+	} else {
+		http_response_code(500);
+		echo json_encode(["mensaje" => "Error en el servidor"]);
 	}
 
 ?>

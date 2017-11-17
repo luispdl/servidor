@@ -37,10 +37,10 @@
 				$tokenArray = JWT::decode($token, self::$clave_secreta, self::$encriptacion);
 			}
 			catch (\Firebase\JWT\ExpiredException $e) {
-				return ["error" => "El token ha expirado"];
+				return ["mensaje" => "El token ha expirado"];
 			}
 			catch (\Firebase\JWT\SignatureInvalidException $e){
-				return ["error" => "Token no verificado"];
+				return ["mensaje" => "Token no verificado"];
 			}
 			if($tokenArray->aud !== self::Aud()) {
             throw new Exception("Usuario invalido");

@@ -21,20 +21,20 @@
     try {
       $validar = Auth::verificar($token);
     } catch (Exception $e) {
-      http_response_code(400);
+      http_response_code(403);
       echo json_encode(["mensaje" => $e]);
       die();
     }
   } else {
-    http_response_code(400);
-    echo "Token no enviado";
+    http_response_code(403);
+    echo json_encode(["mensaje" => "Token no enviado"]);
     die();
   }
-    if($validar["error"]) {
-      http_response_code(400);
-      echo json_encode($validar);
-      die();
-    }
+  if($validar["mensaje"]) {
+    http_response_code(403);
+    echo json_encode($validar);
+    die();
+  }
   	$fecha_actual = new DateTime('NOW');
   	$fecha_actual->setTimeZone(new DateTimeZone("America/Argentina/Buenos_Aires"));
   	$fechas_periodo = Periodo::fechas();
@@ -58,8 +58,8 @@
   	$datos = Auth::obtenerDatos($token);
     if($datos->tipo_usuario == 1) {
       if ($datos->legajo != $legajo){
-        http_response_code(400);
-        echo json_encode(["error" => "Legajo no coincide con el usuario"]);
+        http_response_code(403);
+        echo json_encode(["mensaje" => "Legajo no coincide con el usuario"]);
         die();
       }
     }

@@ -71,7 +71,7 @@
 			} else {
 				//Si las fechas son invalidas devuelvo un codigo de estado 400 y un JSON con el mensaje
 				http_response_code(400);
-				echo json_encode(["mensaje"=>"No se puede se puede inscribir a más de una materia el mismo de una misma carrera"]);
+				echo json_encode(["mensaje"=>"No se puede inscribir a finales de la misma carrera el mismo día"]);
 			}
 
 		} else {
