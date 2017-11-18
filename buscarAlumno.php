@@ -1,6 +1,7 @@
 <?php 
 	require_once "Config/Autoload.php";
 	use Modelos\Alumno;
+	use Modelos\Auth;
 
 	Config\Autoload::run();
 	header("Access-Control-Allow-Origin: *");
