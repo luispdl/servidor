@@ -28,7 +28,12 @@
 
 		public static function registrarAlumno ($legajo, $nombre_usuario, $password, $ID_rol, $email) {
 			$con = new Conexion();
-			$sql = "INSERT usuarios (nombre_cuenta_usuario, password, 	correoElectronico, legajo, ID_rol ) VALUES ('$nombre_usuario', '$password', '$email', $legajo, $ID_rol)";
+			if($legajo) {
+				$sql = "INSERT usuarios (nombre_cuenta_usuario, password, correoElectronico, legajo, ID_rol ) VALUES ('$nombre_usuario', '$password', '$email', $legajo, $ID_rol)";
+			} else {
+				$sql = "INSERT usuarios (nombre_cuenta_usuario, password, correoElectronico, ID_rol ) VALUES ('$nombre_usuario', '$password', '$email', $ID_rol)";
+			}
+
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado) {
 				return true;
