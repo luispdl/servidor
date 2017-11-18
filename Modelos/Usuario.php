@@ -33,6 +33,7 @@
 			} else {
 				$sql = "INSERT usuarios (nombre_cuenta_usuario, password, correoElectronico, ID_rol ) VALUES ('$nombre_usuario', '$password', '$email', $ID_rol)";
 			}
+			return $sql;
 
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado) {
@@ -78,11 +79,16 @@
 					return ["estado" => "error", "mensaje" => "Datos incorrectos"];
 				}
 			} else {
-				$sql = "SELECT 1 FROM alumnos WHERE numero_documento = '$usuario' and numero_documento = '$password'";
-				return $sql;
+				$sql = "SELECT legajo FROM alumnos WHERE numero_documento = '$usuario' and numero_documento = '$password'";
 				$resultado = $con->consultaRetorno($sql);
 				if($resultado->num_rows != 0){
-					return ["estado" => "registrar"];
+					$row = mysqli_fetch_object($resultado);
+					$sql = "SELECT 1 FROM usuarios WHERE legajo = $row->legajo";
+					if($resultado->num_rows != 0) {
+						return ["estado" => "error", "mensaje" => "Alumno ya registrado"];
+					} else {
+						return ["estado" => "registrar"];
+					}	
 				} else {
 					return ["estado" => "error", "mensaje" => "Datos incorrectos"];
 				}

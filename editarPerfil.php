@@ -8,8 +8,8 @@
 	header("Access-Control-Allow-Origin: *");
 	header('Content-Type: application/json');
 
-	if(isset($_GET["token"]) and !empty($_GET["token"])) {
-    $token = $_GET["token"];
+	if(isset($_POST["token"]) and !empty($_POST["token"])) {
+    $token = $_POST["token"];
     try {
       $validar = Auth::verificar($token);
     } catch (Exception $e) {
