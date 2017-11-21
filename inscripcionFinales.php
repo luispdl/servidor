@@ -35,7 +35,7 @@
   }
   if($validar["error"]) {
     http_response_code(400);
-    echo json_encode($validar);
+    echo json_encode($validar["error"]);
     die();
   }
 

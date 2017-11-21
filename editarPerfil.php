@@ -24,7 +24,7 @@
   }
   if($validar["error"]) {
     http_response_code(403);
-    echo json_encode(["mensaje" => $validar]);
+    echo json_encode(["mensaje" => $validar["error"]]);
     die();
   }
 

@@ -1,6 +1,6 @@
 <?php
 	require_once "Config/Autoload.php";
-	use Modelos\Noticia;
+	use Modelos\Usuario;
   use Modelos\Auth;
 
 	Config\Autoload::run();
@@ -26,5 +26,5 @@
     echo json_encode(["mensaje" => $validar["error"]]);
     die();
   }
-	echo json_encode(["noticias" => Noticia::todas()]);
+	echo json_encode(["preceptores" => Usuario::preceptores()]);
  ?>

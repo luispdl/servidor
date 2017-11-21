@@ -63,7 +63,7 @@
 			//Devuelve todas las noticias que se encuentran guardadas en la base de datos
 
 			$con = new Conexion();
-			$sql = "SELECT * FROM noticias";
+			$sql = "SELECT titulo, contenido, imagen, fecha_creacion, ID_noticia FROM noticias";
 			$resultado = $con->consultaRetorno($sql);
 			$noticias = [];
 			while($row = mysqli_fetch_object($resultado)){

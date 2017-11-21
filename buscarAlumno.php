@@ -23,7 +23,7 @@
   }
   if($validar["error"]) {
     http_response_code(403);
-    echo json_encode(["mensaje" => $validar]);
+    echo json_encode(["mensaje" => $validar["error"]]);
     die();
   }
 
@@ -66,6 +66,17 @@
 				} else {
 					http_response_code(400);
 					echo json_encode(["mensaje"=>"El nombre no fue enviado"]);
+				}
+				break;
+			case 'usuario':
+				if($_GET['nombre_usuario']) {
+					$nombre_usuario = $_GET["nombre_usuario"];
+					$alumno = Alumno::buscarPorNombreUsuario($nombre_usuario);
+					echo json_encode([$alumno]);
+				}
+				else {
+					http_response_code(400);
+					echo json_encode(["mensaje"=>"El nombre de usuario no fue enviado"]);
 				}
 				break;
 			default:

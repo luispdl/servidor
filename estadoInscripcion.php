@@ -7,9 +7,12 @@
 			-Un objeto con ["mensaje" => 'El legajo no fue enviado'] en caso de que el legajo no haya sido enviado o este vacio.
 	*/
 	require_once "Config/Autoload.php";
+
 	use Modelos\Alumno;
 	use Modelos\Periodo;
   use Modelos\Auth;
+
+	require './vendor/autoload.php';
 
 	Config\Autoload::run();
 	header("Access-Control-Allow-Origin: *");
@@ -31,7 +34,7 @@
   }
   if($validar["error"]) {
     http_response_code(403);
-    echo json_encode(["mensaje" => $validar]);
+    echo json_encode(["mensaje" => $validar["error"]]);
     die();
   }
 

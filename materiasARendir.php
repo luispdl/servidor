@@ -30,9 +30,9 @@
     echo json_encode(["mensaje" => "Token no enviado"]);
     die();
   }
-  if($validar["mensaje"]) {
+  if($validar["error"]) {
     http_response_code(403);
-    echo json_encode($validar);
+    echo json_encode(["mensaje" => $validar["error"]]);
     die();
   }
   	$fecha_actual = new DateTime('NOW');

@@ -1,14 +1,14 @@
 <?php
 	require_once "Config/Autoload.php";
-	use Modelos\Noticia;
+	use Modelos\Usuario;
   use Modelos\Auth;
 
 	Config\Autoload::run();
 	header("Access-Control-Allow-Origin: *");
 	header('Content-Type: application/json');
 
-  if(isset($_GET["token"]) and !empty($_GET["token"])) {
-    $token = $_GET["token"];
+  if(isset($_POST["token"]) and !empty($_POST["token"])) {
+    $token = $_POST["token"];
     try {
       $validar = Auth::verificar($token);
     } catch (Exception $e) {
@@ -26,5 +26,14 @@
     echo json_encode(["mensaje" => $validar["error"]]);
     die();
   }
-	echo json_encode(["noticias" => Noticia::todas()]);
+	if(isset($_POST["password"]) && !empty($_POST["password"]) && isset($_POST["nombre_usuario"]) && !empty($_POST["nombre_usuario"])) {
+    $password = $_POST["password"];
+    $nombre_usuario = $_POST["nombre_usuario"];
+    if(Usuario::editarPassword($password, $nombre_usuario)){
+      echo json_encode(["mensaje" => "Contraseña editada exitosamente"]);
+    } else {
+      http_response_code(500);
+      echo json_encode(["mensaje" => "Error en el servidor"]);
+    }
+  }
  ?>

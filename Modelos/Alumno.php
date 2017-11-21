@@ -170,28 +170,38 @@ use Modelos\Materia;
 			$con = new Conexion();
 			$sql = "SELECT distinct legajo, nombre, apellido, tipo_documento, numero_documento FROM alumnos WHERE legajo=$legajo";
 			$resultado = $con->consultaRetorno($sql);
-			$row = mysqli_fetch_object($resultado);
-			$alumno = new Alumno($row->legajo);
-			$alumno->nombre = $row->nombre;
-			$alumno->apellido = $row->apellido;
-			$alumno->numero_documento = $row->numero_documento;
-			$alumno->tipo_documento = $row->tipo_documento;
+			if($resultado->num_rows!= 0) {
+				$row = mysqli_fetch_object($resultado);
+				$alumno = new Alumno($row->legajo);
+				$alumno->nombre = $row->nombre;
+				$alumno->apellido = $row->apellido;
+				$alumno->numero_documento = $row->numero_documento;
+				$alumno->tipo_documento = $row->tipo_documento;
 
-			return $alumno;
+				return $alumno;
+			} else {
+				return false;
+			}
+
 		}
 
 		public static function buscarPorDNI($dni){
 			$con = new Conexion();
 			$sql = "SELECT legajo, nombre, apellido, tipo_documento, numero_documento FROM alumnos WHERE numero_documento='$dni'";
 			$resultado = $con->consultaRetorno($sql);
-			$row = mysqli_fetch_object($resultado);
-			$alumno = new Alumno($row->legajo);
-			$alumno->nombre = $row->nombre;
-			$alumno->apellido = $row->apellido;
-			$alumno->numero_documento = $row->numero_documento;
-			$alumno->tipo_documento = $row->tipo_documento;
+			if($resultado->num_rows!=0){
+				$row = mysqli_fetch_object($resultado);
+				$alumno = new Alumno($row->legajo);
+				$alumno->nombre = $row->nombre;
+				$alumno->apellido = $row->apellido;
+				$alumno->numero_documento = $row->numero_documento;
+				$alumno->tipo_documento = $row->tipo_documento;
 
-			return $alumno;
+				return $alumno;				
+			} else {
+				return false;
+			}
+
 		}
 
 		public static function buscarPorNombre($nombre){
@@ -208,6 +218,25 @@ use Modelos\Materia;
 				$alumnos[] =$alumno;
 			}
 			return $alumnos;
+		}
+
+		public static function buscarPorNombreUsuario($usuario){
+			$con = new Conexion();
+			$sql = "SELECT u.nombre_cuenta_usuario, a.legajo, a.nombre, a.apellido, a.numero_documento FROM usuarios u LEFT JOIN alumnos a on u.legajo = a.legajo WHERE nombre_cuenta_usuario='$usuario' AND ID_rol=1";
+			$resultado = $con->consultaRetorno($sql);
+			if($resultado->num_rows!=0){
+				$row = mysqli_fetch_object($resultado);
+				$alumno = new Alumno($row->legajo);
+				$alumno->nombre = $row->nombre;
+				$alumno->apellido = $row->apellido;
+				$alumno->numero_documento = $row->numero_documento;
+				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
+
+				return $alumno;				
+			} else {
+				return false;
+			}
+
 		}
 
 	}

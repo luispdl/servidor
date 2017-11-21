@@ -23,12 +23,12 @@
   }
   if($validar["error"]) {
     http_response_code(403);
-    echo json_encode(["mensaje" => $validar]);
+    echo json_encode(["mensaje" => $validar["error"]]);
     die();
   }
 
 	$datos = Auth::obtenerDatos($token);
-	if($datos->tipo_usuario != 3{
+	if($datos->tipo_usuario != 3) {
 		http_response_code(403);
 		echo json_encode(["mensaje" => "No tiene autorización para esta operación"]);
 		die();
