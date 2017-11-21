@@ -168,7 +168,7 @@ use Modelos\Materia;
 
 		public static function buscarPorLegajo($legajo){
 			$con = new Conexion();
-			$sql = "SELECT distinct legajo, nombre, apellido, tipo_documento, numero_documento FROM alumnos WHERE legajo=$legajo";
+			$sql = "SELECT distinct a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON u.legajo = a.legajo WHERE a.legajo=$legajo";
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado->num_rows!= 0) {
 				$row = mysqli_fetch_object($resultado);
@@ -177,6 +177,7 @@ use Modelos\Materia;
 				$alumno->apellido = $row->apellido;
 				$alumno->numero_documento = $row->numero_documento;
 				$alumno->tipo_documento = $row->tipo_documento;
+				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
 
 				return $alumno;
 			} else {
@@ -187,7 +188,7 @@ use Modelos\Materia;
 
 		public static function buscarPorDNI($dni){
 			$con = new Conexion();
-			$sql = "SELECT legajo, nombre, apellido, tipo_documento, numero_documento FROM alumnos WHERE numero_documento='$dni'";
+			$sql = "SELECT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON u.legajo = a.legajo WHERE a.numero_documento='$dni'";
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado->num_rows!=0){
 				$row = mysqli_fetch_object($resultado);
@@ -196,6 +197,7 @@ use Modelos\Materia;
 				$alumno->apellido = $row->apellido;
 				$alumno->numero_documento = $row->numero_documento;
 				$alumno->tipo_documento = $row->tipo_documento;
+				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
 
 				return $alumno;				
 			} else {
@@ -206,7 +208,7 @@ use Modelos\Materia;
 
 		public static function buscarPorNombre($nombre){
 			$con = new Conexion();
-			$sql = "SELECT DISTINCT legajo, nombre, apellido, tipo_documento, numero_documento FROM alumnos WHERE CONCAT(apellido,' ',nombre) LIKE ('$nombre%')";
+			$sql = "SELECT DISTINCT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON a.legajo = u.legajo WHERE CONCAT(a.apellido,' ',a.nombre) LIKE ('$nombre%') ORDER BY a.nombre";
 			$resultado = $con->consultaRetorno($sql);
 			$alumnos = [];
 			while($row = mysqli_fetch_object($resultado)){
@@ -215,6 +217,7 @@ use Modelos\Materia;
 				$alumno->apellido = $row->apellido;
 				$alumno->numero_documento = $row->numero_documento;
 				$alumno->tipo_documento = $row->tipo_documento;
+				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
 				$alumnos[] =$alumno;
 			}
 			return $alumnos;
