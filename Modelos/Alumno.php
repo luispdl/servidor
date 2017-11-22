@@ -216,7 +216,12 @@ use Modelos\Materia;
 			$con->consultaRetorno("SET NAMES 'utf8'");
 			$sqlCantidad = "SELECT COUNT(DISTINCT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento) as cantidad FROM alumnos a WHERE a.apellido LIKE '$nombre%'";
 			$resultadoCantidad = $con->consultaRetorno($sqlCantidad);
-			$paginas = intdiv(mysqli_fetch_object($resultadoCantidad)->cantidad, 20) + 1;
+			$cantidad = mysqli_fetch_object($resultadoCantidad)->cantidad;
+			if($cantidad % 20 == 0){
+				$paginas = intdiv($cantidad, 20);
+			} else {
+				$paginas = intdiv($cantidad, 20) + 1;
+			}
 			$limite_inferior = 20*($pag-1);
 			$cantidad_resultados = 20;
 			$sql = "SELECT DISTINCT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON a.legajo = u.legajo WHERE a.apellido LIKE '$nombre%' ORDER BY a.apellido limit $limite_inferior,$cantidad_resultados";
