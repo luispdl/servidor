@@ -199,7 +199,7 @@ use Modelos\Materia;
 				$alumno->tipo_documento = $row->tipo_documento;
 				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
 
-				return $alumno;				
+				return $alumno;
 			} else {
 				return false;
 			}
@@ -208,7 +208,7 @@ use Modelos\Materia;
 
 		public static function buscarPorNombre($nombre){
 			$con = new Conexion();
-			$sql = "SELECT DISTINCT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON a.legajo = u.legajo WHERE CONCAT(a.apellido,' ',a.nombre) LIKE ('$nombre%') ORDER BY a.nombre";
+			$sql = "SELECT DISTINCT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON a.legajo = u.legajo WHERE a.apellido LIKE ('$nombre%') ORDER BY a.nombre";
 			$resultado = $con->consultaRetorno($sql);
 			$alumnos = [];
 			while($row = mysqli_fetch_object($resultado)){
@@ -235,7 +235,7 @@ use Modelos\Materia;
 				$alumno->numero_documento = $row->numero_documento;
 				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
 
-				return $alumno;				
+				return $alumno;
 			} else {
 				return false;
 			}
