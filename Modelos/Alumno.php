@@ -15,6 +15,7 @@ use Modelos\Materia;
 		public $apellido;
 		public $tipo_documento;
 		public $numero_documento;
+		public $nombre_usuario;
 
 		//Metodos
 		public function __construct($legajo){
@@ -39,7 +40,7 @@ use Modelos\Materia;
 		public function materiasDisponiblesParaRendir(){
 
 			$disponibles = [];
-
+			$this->con->consultaRetorno("SET NAMES 'utf8'");
 			$sql = "CALL sp_materias_a_rendir($this->legajo)";
 
 			if($resultado = $this->con->consultaRetorno($sql)){
@@ -58,6 +59,7 @@ use Modelos\Materia;
 
 		//Metodo que devuelve la fecha de regularización, nota del final, fecha del final de todas las materias regularizadas del alumno.
 		public function situacionAcademica(){
+			$this->con->consultaRetorno("SET NAMES 'utf8'");
 			$sql = "SELECT m.codigo_carrera, c.nombre AS nombre_carrera, m.codigo_materia, m.codigo_materia, m.nombre AS nombre_materia, l.fecha_regular, l.nota_final, l.fecha_final FROM materias m
 				INNER JOIN carreras c on c.codigo_carrera = m.codigo_carrera
     		LEFT JOIN libro_matriz l on l.codigo_carrera = m.codigo_carrera and l.codigo_materia = m.codigo_materia
@@ -78,6 +80,7 @@ use Modelos\Materia;
 		// Guardar las inscripciones a finales de las materias pasadas por parametro.
 		// Se guardan las nuevas inscripciones, se actualizan inscripciones ya hechas y se borran las que se habian hecho y ya no estan
 		public function inscripcionAFinales($materias = []){
+			$this->con->consultaRetorno("SET NAMES 'utf8'");
 			if(count($materias)>0){
 				//Voy generando un string para borrar todas las inscripciones que no se hayan pasado por parametro. NOT IN (materias anotadas)
 				$sqlBorrarNoActualizadas = "DELETE FROM inscripciones_finales WHERE nro_operacion NOT IN ( ";
@@ -135,6 +138,7 @@ use Modelos\Materia;
 			INNER JOIN carreras c ON c.codigo_carrera = i.codigo_carrera
 			INNER JOIN materias m ON m.codigo_materia = i.codigo_materia AND m.codigo_carrera = i.codigo_carrera
 			WHERE legajo=$this->legajo";
+			$this->con->consultaRetorno("SET NAMES 'utf8'");
 			$resultado = $this->con->consultaRetorno($sql);
 			while($row = mysqli_fetch_object($resultado)){
 				$row->url_codigo_operacion = $this->getUrlCodigoOperacion($row->codigo_operacion);
@@ -168,6 +172,7 @@ use Modelos\Materia;
 
 		public static function buscarPorLegajo($legajo){
 			$con = new Conexion();
+			$con->consultaRetorno("SET NAMES 'utf8'");
 			$sql = "SELECT distinct a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON u.legajo = a.legajo WHERE a.legajo=$legajo";
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado->num_rows!= 0) {
@@ -188,6 +193,7 @@ use Modelos\Materia;
 
 		public static function buscarPorDNI($dni){
 			$con = new Conexion();
+			$con->consultaRetorno("SET NAMES 'utf8'");
 			$sql = "SELECT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON u.legajo = a.legajo WHERE a.numero_documento='$dni'";
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado->num_rows!=0){
@@ -203,12 +209,17 @@ use Modelos\Materia;
 			} else {
 				return false;
 			}
-
 		}
 
-		public static function buscarPorNombre($nombre){
+		public static function buscarPorNombre($nombre, $pag){
 			$con = new Conexion();
-			$sql = "SELECT DISTINCT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON a.legajo = u.legajo WHERE a.apellido LIKE ('$nombre%') ORDER BY a.nombre";
+			$con->consultaRetorno("SET NAMES 'utf8'");
+			$sqlCantidad = "SELECT COUNT(DISTINCT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento) as cantidad FROM alumnos a WHERE a.apellido LIKE '$nombre%'";
+			$resultadoCantidad = $con->consultaRetorno($sqlCantidad);
+			$paginas = intdiv(mysqli_fetch_object($resultadoCantidad)->cantidad, 20) + 1;
+			$limite_inferior = 20*($pag-1);
+			$cantidad_resultados = 20;
+			$sql = "SELECT DISTINCT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON a.legajo = u.legajo WHERE a.apellido LIKE '$nombre%' ORDER BY a.apellido limit $limite_inferior,$cantidad_resultados";
 			$resultado = $con->consultaRetorno($sql);
 			$alumnos = [];
 			while($row = mysqli_fetch_object($resultado)){
@@ -220,11 +231,12 @@ use Modelos\Materia;
 				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
 				$alumnos[] =$alumno;
 			}
-			return $alumnos;
+			return ["alumnos" => $alumnos, "paginas" => $paginas];
 		}
 
 		public static function buscarPorNombreUsuario($usuario){
 			$con = new Conexion();
+			$con->consultaRetorno("SET NAMES 'utf8'");
 			$sql = "SELECT u.nombre_cuenta_usuario, a.legajo, a.nombre, a.apellido, a.numero_documento FROM usuarios u LEFT JOIN alumnos a on u.legajo = a.legajo WHERE nombre_cuenta_usuario='$usuario' AND ID_rol=1";
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado->num_rows!=0){
