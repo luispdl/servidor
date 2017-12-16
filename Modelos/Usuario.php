@@ -26,9 +26,14 @@
 
 		}
 
-		public static function registrarAlumno ($legajo, $nombre_usuario, $password, $ID_rol, $email) {
+		public static function registrarAlumno ($legajo, $nombre_usuario, $password, $ID_rol, $email, $numero_documento) {
 			$con = new Conexion();
 			if($legajo) {
+				$sqlAlumno = "SELECT 1 FROM alumnos WHERE numero_documento = '$numero_documento' and legajo = $legajo";
+				$resultadoAlumno = $con->consultaRetorno($sqlAlumno);
+				if($resultadoAlumno->num_rows==0){
+					return false;
+				}
 				$sql = "INSERT usuarios (nombre_cuenta_usuario, password, correoElectronico, legajo, ID_rol ) VALUES ('$nombre_usuario', '$password', '$email', $legajo, $ID_rol)";
 			} else {
 				$sql = "INSERT usuarios (nombre_cuenta_usuario, password, correoElectronico, ID_rol ) VALUES ('$nombre_usuario', '$password', '$email', $ID_rol)";

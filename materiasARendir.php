@@ -35,28 +35,28 @@
     echo json_encode(["mensaje" => $validar["error"]]);
     die();
   }
-  	$fecha_actual = new DateTime('NOW');
-  	$fecha_actual->setTimeZone(new DateTimeZone("America/Argentina/Buenos_Aires"));
-  	$fechas_periodo = Periodo::fechas();
-  	if(!$fechas_periodo) {
-  		http_response_code(400);
-  		echo json_encode(["mensaje" => "No hay fecha correspondientes al periodo de inscripción. Comuniquese con un administrativo."]);
-  		die;
-  	}
-  	$fecha_inicio = new DateTime($fechas_periodo->fecha_inicio);
-  	$fecha_inicio->setTimeZone(new DateTimeZone("America/Argentina/Buenos_Aires"));
-  	$fecha_fin = new DateTime($fechas_periodo->fecha_fin);
-  	$fecha_fin->setTimeZone(new DateTimeZone("America/Argentina/Buenos_Aires"));
-  	if($fecha_actual<$fecha_inicio || $fecha_actual>$fecha_fin){
-  		http_response_code(400);
-  		echo json_encode(["mensaje"=>"No se encuentra dentro del periodo de inscripción"]);
-  		die;
-  	}
 
   if(isset($_GET["legajo"]) && !empty($_GET["legajo"])){
   	$legajo =  $_GET["legajo"];
   	$datos = Auth::obtenerDatos($token);
     if($datos->tipo_usuario == 1) {
+      $fecha_actual = new DateTime('NOW');
+      $fecha_actual->setTimeZone(new DateTimeZone("America/Argentina/Buenos_Aires"));
+      $fechas_periodo = Periodo::fechas();
+      if(!$fechas_periodo) {
+        http_response_code(400);
+        echo json_encode(["mensaje" => "No hay fecha correspondientes al periodo de inscripción. Comuniquese con un administrativo."]);
+        die;
+      }
+      $fecha_inicio = new DateTime($fechas_periodo->fecha_inicio);
+      $fecha_inicio->setTimeZone(new DateTimeZone("America/Argentina/Buenos_Aires"));
+      $fecha_fin = new DateTime($fechas_periodo->fecha_fin);
+      $fecha_fin->setTimeZone(new DateTimeZone("America/Argentina/Buenos_Aires"));
+      if($fecha_actual<$fecha_inicio || $fecha_actual>$fecha_fin){
+        http_response_code(400);
+        echo json_encode(["mensaje"=>"No se encuentra dentro del periodo de inscripción"]);
+        die;
+      }
       if ($datos->legajo != $legajo){
         http_response_code(403);
         echo json_encode(["mensaje" => "Legajo no coincide con el usuario"]);

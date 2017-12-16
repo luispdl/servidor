@@ -17,7 +17,8 @@
 		$legajo = null;
 		$id_rol = 2;
 	}
-	if ($registrado = Usuario::registrarAlumno($legajo, $nombre_usuario, $password, $id_rol, $email)) {
+	$registrado = Usuario::registrarAlumno($legajo, $nombre_usuario, $password, $id_rol, $email, $numero_documento);
+	if ($registrado) {
 			echo json_encode(["mensaje" => "ALumno registrado con exito", "registrado" => $registrado]);
 	} else {
 		http_response_code(500);

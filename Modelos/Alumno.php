@@ -81,13 +81,13 @@ use Modelos\Materia;
 		// Se guardan las nuevas inscripciones, se actualizan inscripciones ya hechas y se borran las que se habian hecho y ya no estan
 		public function inscripcionAFinales($materias = []){
 			$this->con->consultaRetorno("SET NAMES 'utf8'");
+			$legajo = $this->legajo;
 			if(count($materias)>0){
 				//Voy generando un string para borrar todas las inscripciones que no se hayan pasado por parametro. NOT IN (materias anotadas)
-				$sqlBorrarNoActualizadas = "DELETE FROM inscripciones_finales WHERE nro_operacion NOT IN ( ";
+				$sqlBorrarNoActualizadas = "DELETE FROM inscripciones_finales WHERE legajo = $legajo AND nro_operacion NOT IN ( ";
 				foreach ($materias as $key => $materia) {
 						$codigo_carrera = $materia["codigo_carrera"];
 						$codigo_materia = $materia["codigo_materia"];
-						$legajo = $this->legajo;
 						$fecha_final = $materia["fecha_final"];
 						$modalidad = $materia["modalidad"];
 						$otrasMaterias[] = $materia;
