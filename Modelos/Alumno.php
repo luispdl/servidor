@@ -71,7 +71,12 @@ use Modelos\Materia;
 
 				$materias[$row->codigo_carrera]["nombre_carrera"] = $row->nombre_carrera;
 				$materias[$row->codigo_carrera]["codigo_carrera"] = $row->codigo_carrera;
-				$materias[$row->codigo_carrera]["materias"][] =$row;
+				$materias[$row->codigo_carrera]["materias"][$row->codigo_materia] =$row;
+				$sqlCorrelativa = "SELECT DISTINCT codigo_correlativa FROM correlativas c INNER JOIN materias WHERE c.codigo_materia = $row->codigo_materia and c.codigo_carrera = $row->codigo_carrera";
+				$resultadoCorrelativas = $this->con->consultaRetorno($sqlCorrelativa);
+				while ($correlativa = mysqli_fetch_object($resultadoCorrelativas)) {
+					$materias[$row->codigo_carrera]["materias"][$row->codigo_materia]->correlativas[] = $correlativa->codigo_correlativa;
+				}
 			}
 
 			return $materias;
