@@ -14,6 +14,7 @@
 	require_once "Config/Autoload.php";
 	use Modelos\Alumno;
 	use Modelos\Auth;
+	use Modelos\Bitacora;
 
 	Config\Autoload::run();
 	header("Access-Control-Allow-Origin: *");
@@ -39,9 +40,9 @@
     die();
   }
 
+	$datos = Auth::obtenerDatos($token);
 	if(isset($_POST["legajo"]) && !empty($_POST["legajo"])){
 		$legajo = $_POST["legajo"];
-		$datos = Auth::obtenerDatos($token);
     if($datos->tipo_usuario == 1) {
       if ($datos->legajo != $legajo){
         http_response_code(400);
@@ -57,7 +58,7 @@
 			if($valido){
 				//Llamo al metodo inscripcionAFinales del alumno.
 				// Devuelve true si se hizo la inscripcion correctamente. De lo contrario devuelve false.
-				$inscripcion = $alumno->inscripcionAFinales($_POST["materias"]);
+				$inscripcion = $alumno->inscripcionAFinales($datos->id, $datos->nombre_usuario, $_POST["materias"]);
 				if(!$inscripcion){
 					//Si no se realizó la inscripción envió un codigo de estado 500. Con un JSON con el mensaje
 					http_response_code(500);
@@ -76,7 +77,7 @@
 
 		} else {
 			//
-			$alumno->inscripcionAFinales();
+			$alumno->inscripcionAFinales($datos->id, $datos->nombre_usuario);
 			echo json_encode(["mensaje"=>"No se inscribió a ningún final"]);
 		}
 	} else {

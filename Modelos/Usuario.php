@@ -48,11 +48,12 @@
 
 		public static function obtenerDatos($nombre_usuario) {
 			$con = new Conexion();
-			$sql = "SELECT u.legajo, u.ID_rol, u.nombre_cuenta_usuario, u.correoElectronico, a.nombre, a.apellido FROM usuarios u LEFT JOIN alumnos a ON a.legajo = u.legajo WHERE u.nombre_cuenta_usuario = '$nombre_usuario'";
+			$sql = "SELECT u.ID, u.legajo, u.ID_rol, u.nombre_cuenta_usuario, u.correoElectronico, a.nombre, a.apellido FROM usuarios u LEFT JOIN alumnos a ON a.legajo = u.legajo WHERE u.nombre_cuenta_usuario = '$nombre_usuario'";
 			$resultado = $con->consultaRetorno($sql);
 			if($row = mysqli_fetch_object($resultado)) {
 				if($row->ID_rol == 1){
 					return [
+						"id" => $row->ID,
 						"legajo" => $row->legajo,
 						"apellido" => $row->apellido,
 						"nombre" => $row->nombre,
@@ -62,6 +63,7 @@
 					];
 				} else {
 					return [
+						"id" => $row->ID,
 						"nombre_usuario" => $row->nombre_cuenta_usuario,
 						"tipo_usuario" => $row->ID_rol,
 						"email" => $row->correoElectronico

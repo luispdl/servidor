@@ -38,21 +38,16 @@ use Modelos\Materia;
 
 		// Metodo que devuelve todas las materias que el alumno tiene disponible para rendir, según lo que devuelve el Stored Procedure sp_materias_a_rendir
 		public function materiasDisponiblesParaRendir(){
-
 			$disponibles = [];
 			$this->con->consultaRetorno("SET NAMES 'utf8'");
 			$sql = "CALL sp_materias_a_rendir($this->legajo)";
-
 			if($resultado = $this->con->consultaRetorno($sql)){
-
 				while($row = mysqli_fetch_object($resultado)){
 					$disponibles[$row->codigo_carrera]["nombre_carrera"] = $row->nombre_carrera;
 					$disponibles[$row->codigo_carrera]["codigo_carrera"] = $row->codigo_carrera;
 					$disponibles[$row->codigo_carrera]["materias"][] =$row;
-
 				}
 			}
-
 
 			return $disponibles;
 		}
@@ -84,7 +79,7 @@ use Modelos\Materia;
 
 		// Guardar las inscripciones a finales de las materias pasadas por parametro.
 		// Se guardan las nuevas inscripciones, se actualizan inscripciones ya hechas y se borran las que se habian hecho y ya no estan
-		public function inscripcionAFinales($materias = []){
+		public function inscripcionAFinales($usuario_id, $nombre_usuario, $materias = []){
 			$this->con->consultaRetorno("SET NAMES 'utf8'");
 			$legajo = $this->legajo;
 			if(count($materias)>0){
@@ -100,6 +95,12 @@ use Modelos\Materia;
 					if($materia["nro_operacion"]!=-1){
 						$sql = "UPDATE inscripciones_finales set codigo_carrera =" . $materia['codigo_carrera'] .", codigo_materia = " . $materia["codigo_materia"] .", fecha_final = '". $materia["fecha_final"]. "', modalidad = '".$materia["modalidad"]."' WHERE nro_operacion =" .$materia["nro_operacion"];
 						// Se agrega el nro_operacion de la materia que no quiero borrar.
+						// Guardo en la bitcora
+						$descripcion = "El usuario $nombre_usuario elimino la inscripción a la materia " . $materia['codigo_materia'] . " de la carrera " . $materia["codigo_carrera"];
+						$bitacora = Bitacora::guardar($usuario_id, $descripcion);
+						if(!$bitacora) {
+							return false;
+						}
 						$sqlBorrarNoActualizadas = $sqlBorrarNoActualizadas."'". $materia["nro_operacion"] ."',";
 						if(!$this->con->consultaRetorno($sql)){
 							return false;
@@ -107,6 +108,12 @@ use Modelos\Materia;
 					} else {
 						$sql = "INSERT INTO inscripciones_finales (codigo_carrera, codigo_materia, legajo, fecha_final, modalidad) values ($codigo_carrera, $codigo_materia, $legajo, '$fecha_final', '$modalidad')";
 						if(!$this->con->consultaRetorno($sql)){
+							return false;
+						}
+						// Guardo en la bitcora
+						$descripcion = "El usuario $nombre_usuario se inscribio a la materia " . $materia['codigo_materia'] . " de la carrera " . $materia["codigo_carrera"];
+						$bitacora = Bitacora::guardar($usuario_id, $descripcion);
+						if(!$bitacora) {
 							return false;
 						}
 						// Si se inserta esa inscripciones necesito saber el nro_operacion para no borrarla. Entonces busco la ultima inscripcion agregada
@@ -118,7 +125,7 @@ use Modelos\Materia;
 					}
 				}
 				//Elimino el ultimo caracter del string de la sentencia para borrar materias ya que es una , (coma). Y cierro el parentesis.
-				$sqlBorrarNoActualizadas = substr ($sqlBorrarNoActualizadas, 0, strlen($sqlBorrarNoActualizadas) - 1);
+				$sqlBorrarNoActualizadas = substr($sqlBorrarNoActualizadas, 0, strlen($sqlBorrarNoActualizadas) - 1);
 				$sqlBorrarNoActualizadas = $sqlBorrarNoActualizadas . ')';
 				if(!$this->con->consultaRetorno($sqlBorrarNoActualizadas)) { //Ejecuto la sentencia para eliminar las materias no anotadas
 					return false;
@@ -130,6 +137,12 @@ use Modelos\Materia;
 				// En caso de que no se anote en ninguna materia, elimino todas las inscripciones de ese alumno.
 				$sqlBorrar = "DELETE FROM inscripciones_finales WHERE legajo = $this->legajo";
 				$this->con->consultaSimple($sqlBorrar);
+				// Guardo en la bitcora
+				$descripcion = "El usuario $nombre_usuario elimino todas las inscripciones previamente realizadas";
+				$bitacora = Bitacora::guardar($usuario_id, $descripcion);
+				if(!$bitacora) {
+					return false;
+				}
 			}
 		}
 
