@@ -4,7 +4,7 @@
 	{
 		private $con;
 
-		public function __construct($fecha_inicio, $fecha_fin){
+		public function __construct(){
 			$this->con = new Conexion();
 
 		}
@@ -20,7 +20,14 @@
 			}
 		}
 
-		public static function mostrar(){
+		public static function mostrarPorUsuario($usuario_id){
 			$con = new Conexion();
+			$sql = "SELECT ID_usuario, fecha, Descripcion FROM bitacora WHERE ID_usuario = $usuario_id";
+			$resultado = $con->consultaRetorno($sql);
+			$historial = [];
+			while($row = mysqli_fetch_object($resultado)){
+				$historial[] = $row;
+			}
+			return $historial;
 		}
 	}

@@ -53,14 +53,13 @@
 					$extension = end($tmp);
 					$src = 'noticia_ISFT179_'.time().'.'.$extension;
 					move_uploaded_file($tmp_name, $carpeta .'/' .$src);
-					$resultado = Noticia::actualizar($id,$titulo,$contenido,$src);
+					$resultado = Noticia::actualizar($datos->id, $datos->nombre_usuario, $id, $titulo, $contenido, $src);
 					if($resultado){
 						echo json_encode(["mensaje"=>"La noticia se actualizó con exito","noticia"=>$resultado]);
 					} else {
 						http_response_code(500);
 						echo json_encode(["mensaje"=>"La noticia no se actualizo1","noticia"=>['id'=>$id,'titulo'=>$titulo]]);
 					}
-
 				}
 
 			} else {
@@ -68,7 +67,7 @@
 				$titulo = $_POST["titulo"];
 				$contenido = $_POST["contenido"];
 				$id = $_POST["id"];
-				$resultado = Noticia::actualizar($id,$titulo,$contenido,$src);
+				$resultado = Noticia::actualizar($datos->id, $datos->nombre_usuario, $id, $titulo, $contenido, $src);
 				if($resultado){
 					echo json_encode(["mensaje"=>"La noticia se actualizó con exito",]);
 				} else {
@@ -83,7 +82,7 @@
 
 	} else {
 		http_response_code(400);
-		echo json_encode(["mensaje"=>"El id de la noticia es inválido"]);
+		echo json_encode(["mensaje" => "El id de la noticia es inválido"]);
 
 	}
 

@@ -269,7 +269,7 @@ use Modelos\Materia;
 				$alumno->apellido = $row->apellido;
 				$alumno->numero_documento = $row->numero_documento;
 				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
-
+				
 				return $alumno;
 			} else {
 				return false;

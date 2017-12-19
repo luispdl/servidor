@@ -37,7 +37,7 @@
 
 	if(isset($_GET["id"]) && !empty($_GET["id"])){
 		$id = $_GET["id"];
-		$resultado = Noticia::eliminar($id);
+		$resultado = Noticia::eliminar($datos->id, $datos->nombre_usuario, $id);
 		if($resultado) {
 			echo json_encode(["mensaje"=>"La noticia se eliminó correctamente"]);
 		} else {

@@ -15,9 +15,14 @@
 			$this->con = new Conexion();
 		}
 
-		public function guardar(){
+		public function guardar($usuario_id, $nombre_usuario){
 			//Guardo la imagen con los datos que ya se encuentran en el objeto creado
 			$sql = "INSERT INTO noticias (ID_noticia, titulo, contenido, imagen, fecha_creacion) values(null,'$this->titulo', '$this->contenido','$this->imagen', now())";
+			$descripcion = "El usuario $nombre_usuario guardó la noticia con titulo $this->titulo";
+			$bitacora = Bitacora::guardar($usuario_id, $descripcion);
+			if(!$bitacora) {
+				return false;
+			}
 			$resultado =  $this->con->consultaRetorno($sql);
 			if ($resultado){
 				return true;
@@ -26,7 +31,7 @@
 			}
 		}
 
-		public static function actualizar($id,$titulo,$contenido,$imagen){
+		public static function actualizar($usuario_id, $nombre_usuario, $id, $titulo, $contenido, $imagen){
 			//Si no se envia una imagen nueva solo actualizo titulo y contenido.
 			$con = new Conexion();
 
@@ -50,7 +55,11 @@
 				$sql = $sql ."WHERE ID_noticia = $id";
 			}
 			$resultado = $con->consultaRetorno($sql);
-			return $sql;
+			$descripcion = "El usuario $nombre_usuario actulizó la noticia con id: $id";
+			$bitacora = Bitacora::guardar($usuario_id, $descripcion);
+			if(!$bitacora) {
+				return false;
+			}
 			if($resultado){
 				return true;
 			} else {
@@ -78,7 +87,7 @@
 			return $noticias;
 		}
 
-		public static function eliminar($id){
+		public static function eliminar($usuario_id, $nombre_usuario, $id){
 			//Elimina la noticia con el id pasado por parametro.
 			//1ero busco el nombre de la imagen de esa noticia asi la elimino del servidor
 
@@ -94,6 +103,11 @@
 			// }
 			$sql = "DELETE FROM noticias WHERE ID_noticia=$id";
 			$resultado = $con->consultaRetorno($sql);
+			$descripcion = "El usuario $nombre_usuario eliminó la noticia con id: $id";
+			$bitacora = Bitacora::guardar($usuario_id, $descripcion);
+			if(!$bitacora) {
+				return false;
+			}
 			if($resultado) {
 				return true;
 			} else {

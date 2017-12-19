@@ -56,7 +56,7 @@
 			$src = null;
 		}
 		$noticia = new Noticia($titulo, $contenido, $src);
-		$resultado = $noticia->guardar();
+		$resultado = $noticia->guardar($datos->id, $datos->nombre_usuario);
 		if($resultado){
 			echo json_encode(["mensaje"=>"La noticia se guardo con exito"]);
 		} else {
