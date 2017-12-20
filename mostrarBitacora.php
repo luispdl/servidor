@@ -27,5 +27,8 @@
     die();
   }
   if(isset($_GET["usuario_id"]) and !empty($_GET["usuario_id"])) {
-	echo json_encode(["bitacora" => Bitacora::mostrarPorUsuario($usuario_id)]);
+	 echo json_encode(Bitacora::mostrarPorUsuario($_GET["usuario_id"]));
+  } else {
+    echo json_encode(Bitacora::mostrarAdmin());
+  }
  ?>

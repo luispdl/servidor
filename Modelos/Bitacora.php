@@ -30,4 +30,15 @@
 			}
 			return $historial;
 		}
+
+		public static function mostrarAdmin() {
+			$con = new Conexion();
+			$sql = "SELECT ID_usuario, fecha, Descripcion FROM bitacora b INNER JOIN usuarios u ON b.ID_usuario = u.ID WHERE ID_rol != 1";
+			$resultado = $con->consultaRetorno($sql);
+			$historial = [];
+			while($row = mysqli_fetch_object($resultado)){
+				$historial[] = $row;
+			}
+			return $historial;
+		}
 	}

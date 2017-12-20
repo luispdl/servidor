@@ -191,7 +191,7 @@ use Modelos\Materia;
 		public static function buscarPorLegajo($legajo){
 			$con = new Conexion();
 			$con->consultaRetorno("SET NAMES 'utf8'");
-			$sql = "SELECT distinct a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON u.legajo = a.legajo WHERE a.legajo=$legajo";
+			$sql = "SELECT distinct a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.ID as usuario_id, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON u.legajo = a.legajo WHERE a.legajo=$legajo";
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado->num_rows!= 0) {
 				$row = mysqli_fetch_object($resultado);
@@ -200,6 +200,7 @@ use Modelos\Materia;
 				$alumno->apellido = $row->apellido;
 				$alumno->numero_documento = $row->numero_documento;
 				$alumno->tipo_documento = $row->tipo_documento;
+				$alumno->usuario_id = $row->usuario_id;
 				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
 
 				return $alumno;
@@ -212,7 +213,7 @@ use Modelos\Materia;
 		public static function buscarPorDNI($dni){
 			$con = new Conexion();
 			$con->consultaRetorno("SET NAMES 'utf8'");
-			$sql = "SELECT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON u.legajo = a.legajo WHERE a.numero_documento='$dni'";
+			$sql = "SELECT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.ID as usuario_id, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON u.legajo = a.legajo WHERE a.numero_documento='$dni'";
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado->num_rows!=0){
 				$row = mysqli_fetch_object($resultado);
@@ -221,6 +222,7 @@ use Modelos\Materia;
 				$alumno->apellido = $row->apellido;
 				$alumno->numero_documento = $row->numero_documento;
 				$alumno->tipo_documento = $row->tipo_documento;
+				$alumno->usuario_id = $row->usuario_id;
 				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
 
 				return $alumno;
@@ -242,7 +244,7 @@ use Modelos\Materia;
 			}
 			$limite_inferior = 20*($pag-1);
 			$cantidad_resultados = 20;
-			$sql = "SELECT DISTINCT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON a.legajo = u.legajo WHERE a.apellido LIKE '$nombre%' ORDER BY a.apellido limit $limite_inferior,$cantidad_resultados";
+			$sql = "SELECT DISTINCT a.legajo, a.nombre, a.apellido, a.tipo_documento, a.numero_documento, u.ID as usuario_id, u.nombre_cuenta_usuario FROM alumnos a LEFT JOIN usuarios u ON a.legajo = u.legajo WHERE a.apellido LIKE '$nombre%' ORDER BY a.apellido limit $limite_inferior,$cantidad_resultados";
 			$resultado = $con->consultaRetorno($sql);
 			$alumnos = [];
 			while($row = mysqli_fetch_object($resultado)){
@@ -251,6 +253,7 @@ use Modelos\Materia;
 				$alumno->apellido = $row->apellido;
 				$alumno->numero_documento = $row->numero_documento;
 				$alumno->tipo_documento = $row->tipo_documento;
+				$alumno->usuario_id = $row->usuario_id;
 				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
 				$alumnos[] =$alumno;
 			}
@@ -260,7 +263,7 @@ use Modelos\Materia;
 		public static function buscarPorNombreUsuario($usuario){
 			$con = new Conexion();
 			$con->consultaRetorno("SET NAMES 'utf8'");
-			$sql = "SELECT u.nombre_cuenta_usuario, a.legajo, a.nombre, a.apellido, a.numero_documento FROM usuarios u LEFT JOIN alumnos a on u.legajo = a.legajo WHERE nombre_cuenta_usuario='$usuario' AND ID_rol=1";
+			$sql = "SELECT  u.ID as usuario_id, u.nombre_cuenta_usuario, a.legajo, a.nombre, a.apellido, a.numero_documento FROM usuarios u LEFT JOIN alumnos a on u.legajo = a.legajo WHERE nombre_cuenta_usuario='$usuario' AND ID_rol=1";
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado->num_rows!=0){
 				$row = mysqli_fetch_object($resultado);
@@ -268,6 +271,7 @@ use Modelos\Materia;
 				$alumno->nombre = $row->nombre;
 				$alumno->apellido = $row->apellido;
 				$alumno->numero_documento = $row->numero_documento;
+				$alumno->usuario_id = $row->usuario_id;
 				$alumno->nombre_usuario = $row->nombre_cuenta_usuario;
 				
 				return $alumno;
