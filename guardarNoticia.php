@@ -2,6 +2,8 @@
 	require_once "Config/Autoload.php";
 	use Modelos\Noticia;
 	use Modelos\Auth;
+	// import the Intervention Image Manager Class
+	use Intervention\Image\ImageManagerStatic as Image;
 
 	Config\Autoload::run();
 	header("Access-Control-Allow-Origin: *");
@@ -51,6 +53,14 @@
 				$extension = end($tmp);
 				$src = 'noticia_ISFT179_'.time().'.'.$extension;
 				move_uploaded_file($tmp_name, $carpeta .'/' .$src);
+				$image = Image::make($carpeta .'/' .$src);
+				$width = $image->width();
+				$porcentajeHeight = 200 * 100 / $width;
+				$height = $porcentajeHeight * $image->height() / 100;
+				if ($height > 200) {
+					$height = 200;
+				}
+				$image->resize(200, $height)->save($carpeta .'/' .$src);
 			}
 		} else {
 			$src = null;

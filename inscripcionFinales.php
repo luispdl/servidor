@@ -43,13 +43,13 @@
 	$datos = Auth::obtenerDatos($token);
 	if(isset($_POST["legajo"]) && !empty($_POST["legajo"])){
 		$legajo = $_POST["legajo"];
-    if($datos->tipo_usuario == 1) {
-      if ($datos->legajo != $legajo){
-        http_response_code(400);
-        echo json_encode(["error" => "Legajo no coincide con el usuario"]);
-        die();
-      }
-    }
+	    if($datos->tipo_usuario == 1) {
+	      if ($datos->legajo != $legajo){
+	        http_response_code(400);
+	        echo json_encode(["error" => "Legajo no coincide con el usuario"]);
+	        die();
+	      }
+	    }
 		$alumno = new Alumno($_POST["legajo"]);
 		if(isset($_POST["materias"]) and !empty($_POST["materias"])){
 			$materias = $_POST["materias"];

@@ -55,7 +55,7 @@
 				$sql = $sql ."WHERE ID_noticia = $id";
 			}
 			$resultado = $con->consultaRetorno($sql);
-			$descripcion = "El usuario $nombre_usuario actulizó la noticia con id: $id";
+			$descripcion = "El usuario $nombre_usuario actualizó la noticia con id: $id";
 			$bitacora = Bitacora::guardar($usuario_id, $descripcion);
 			if(!$bitacora) {
 				return false;
@@ -97,10 +97,8 @@
 			$resultado = $con->consultaRetorno($sql);
 			$respuesta = mysqli_fetch_object($resultado);
 			$imagen = $respuesta->imagen;
-			$url_imagen = './imagenes/'.$imagen;
-			// if(!unlink($url_imagen)){
-			// 	return $url_imagen;
-			// }
+			$url_imagen = './imagenes/'. $imagen;
+			unlink($url_imagen);
 			$sql = "DELETE FROM noticias WHERE ID_noticia=$id";
 			$resultado = $con->consultaRetorno($sql);
 			$descripcion = "El usuario $nombre_usuario eliminó la noticia con id: $id";

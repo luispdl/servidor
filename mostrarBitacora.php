@@ -26,9 +26,26 @@
     echo json_encode(["mensaje" => $validar["error"]]);
     die();
   }
-  if(isset($_GET["usuario_id"]) and !empty($_GET["usuario_id"])) {
-	 echo json_encode(Bitacora::mostrarPorUsuario($_GET["usuario_id"]));
+  if (isset($_GET["q"]) && !empty($_GET["q"]) && isset($_GET['buscarPor']) && !empty($_GET['buscarPor'])) {
+    switch ($_GET["buscarPor"]) {
+      case 1:
+        echo json_encode(Bitacora::mostrarPorNombreUsuario($_GET["q"]));
+        break;
+      case 2:
+        echo json_encode(Bitacora::mostrarPorFecha($_GET["q"]));
+        break;
+      case 3:
+        echo json_encode(Bitacora::mostrarPorLegajo($_GET["q"]));
+        break;
+      default:
+        // code...
+        break;
+    }
   } else {
-    echo json_encode(Bitacora::mostrarAdmin());
+    if(isset($_GET["usuario_id"]) and !empty($_GET["usuario_id"])) {
+  	 echo json_encode(Bitacora::mostrarPorUsuario($_GET["usuario_id"]));
+    } else {
+      echo json_encode(Bitacora::mostrarAdmin());
+    }
   }
  ?>

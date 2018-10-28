@@ -96,7 +96,7 @@ use Modelos\Materia;
 						$sql = "UPDATE inscripciones_finales set codigo_carrera =" . $materia['codigo_carrera'] .", codigo_materia = " . $materia["codigo_materia"] .", fecha_final = '". $materia["fecha_final"]. "', modalidad = '".$materia["modalidad"]."' WHERE nro_operacion =" .$materia["nro_operacion"];
 						// Se agrega el nro_operacion de la materia que no quiero borrar.
 						// Guardo en la bitcora
-						$descripcion = "El usuario $nombre_usuario elimino la inscripción a la materia " . $materia['codigo_materia'] . " de la carrera " . $materia["codigo_carrera"];
+						$descripcion = "El usuario $nombre_usuario eliminó la inscripción a la materia " . $materia['codigo_materia'] . " de la carrera " . $materia["codigo_carrera"] . " del alumno con legajo: $this->legajo";
 						$bitacora = Bitacora::guardar($usuario_id, $descripcion);
 						if(!$bitacora) {
 							return false;
@@ -111,7 +111,7 @@ use Modelos\Materia;
 							return false;
 						}
 						// Guardo en la bitcora
-						$descripcion = "El usuario $nombre_usuario se inscribio a la materia " . $materia['codigo_materia'] . " de la carrera " . $materia["codigo_carrera"];
+						$descripcion = "El usuario $nombre_usuario inscribió a la materia " . $materia['codigo_materia'] . " de la carrera " . $materia["codigo_carrera"] . " del alumno con legajo: $this->legajo";
 						$bitacora = Bitacora::guardar($usuario_id, $descripcion);
 						if(!$bitacora) {
 							return false;
