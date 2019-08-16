@@ -44,15 +44,25 @@
 			$tmp_name = $imagen['tmp_name'];
 			$nombre = $imagen["name"];
 			$tipo = $imagen["type"];
+			if ($tipo == '') {
+				$dividirTipo = explode('.', $nombre);
+				$tipo = end( $dividirTipo);
+			}
 			$carpeta = "./imagenes";
-			if($tipo != 'image/jpg' && $tipo != 'image/jpeg' && $tipo != 'image/png' && $tipo != 'image/gif') {
+			if($tipo != 'image/jpg' && $tipo != 'image/jpeg' && $tipo != 'image/png' && $tipo != 'image/gif' &&
+				$tipo != 'jpg' && $tipo != 'jpeg' && $tipo != 'png' && $tipo != 'gif'
+			) {
 				http_response_code(500);
 				echo json_encode(["mensaje"=>"El archivo no es una imagen"]);
+				die();
 			} else {
 				$tmp = explode(".",$nombre);
 				$extension = end($tmp);
 				$src = 'noticia_ISFT179_'.time().'.'.$extension;
-				move_uploaded_file($tmp_name, $carpeta .'/' .$src);
+				if (!move_uploaded_file($tmp_name, $carpeta .'/' .$src)) {
+					http_response_code(500);
+					echo json_encode(["mensaje"=>"La noticia no se guardó"]);
+				}
 				$image = Image::make($carpeta .'/' .$src);
 				$width = $image->width();
 				$porcentajeHeight = 200 * 100 / $width;
