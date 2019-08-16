@@ -74,7 +74,7 @@
 
 		public static function login($usuario, $password) {
 			$con = new Conexion();
-			$sql = "SELECT password FROM usuarios WHERE nombre_cuenta_usuario = '$usuario'";
+			$sql = "SELECT password FROM usuarios WHERE nombre_cuenta_usuario = '$usuario' AND activo = 1";
 			$resultado = $con->consultaRetorno($sql);
 			if($resultado->num_rows != 0) {
 				$row = mysqli_fetch_object($resultado);
@@ -130,18 +130,62 @@
 
 		public static function reiniciar($nombre_usuario) {
 			$con = new Conexion();
-			$sql = "DELETE FROM usuarios WHERE nombre_cuenta_usuario = '$nombre_usuario'";
-			$resultado = $con->consultaRetorno($sql);
-			if($resultado){
-				return true;
-			} else {
-				return false;
-			}
+			$sqlUsuario = "SELECT ID_rol FROM usuarios WHERE nombre_cuenta_usuario = '$nombre_usuario'";
+			$resultadoUsuario = $con->consultaRetorno($sqlUsuario);
+			if ($resultadoUsuario) {
+                $rowUsuario = mysqli_fetch_object($resultadoUsuario);
+                if ($rowUsuario->ID_rol == 1) {
+                    $usuarioId = $rowUsuario->ID;
+                    $sqlBorrarBitacora = "DELETE FROM bitacora WHERE ID_usuario = $usuarioId";
+                    $resultadoBorrarBitacora = $con->consultaRetorno($sqlBorrarBitacora);
+                    if(!$resultadoBorrarBitacora){
+                        return [
+                            'success' => false,
+                            'message' => 'Error en el servidor.'
+                        ];
+                    } else {
+                        $sqlBorrarUsuario = "DELETE FROM usuarios WHERE ID_usuario = $usuarioId";
+                        $resultadoBorrarUsuario = $con->consultaRetorno($sqlBorrarUsuario);
+                        if(!$resultadoBorrarUsuario){
+                            return [
+                                'success' => false,
+                                'message' => 'Error en el servidor'
+                            ];
+                        }
+                        return [
+                            'success' => true,
+                            'message' => 'Usuario reiniciado exitosamente.'
+                        ];
+                    }
+                } else {
+                    return [
+                        'success' => false,
+                        'message' => 'No puede eliminar este usuario'
+                    ];
+                }
+            }
 		}
+
+		public static function cambiarActivoUsuario($nombre_usuario, $activar) {
+            $con = new Conexion();
+            $sql = "UPDATE usuarios SET activo = $activar WHERE nombre_cuenta_usuario = '$nombre_usuario'";
+            $resultado = $con->consultaRetorno($sql);
+            if($resultado){
+                return [
+                    'success' => true,
+                    'message' => 'Usuario cambiado correctamente'
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'No se pudo cambiar el usuario'
+                ];
+            }
+        }
 
 		public static function preceptores() {
 			$con = new Conexion();
-			$sql = "SELECT ID, correoElectronico, nombre_cuenta_usuario FROM usuarios WHERE ID_rol = 2";
+			$sql = "SELECT ID, correoElectronico, nombre_cuenta_usuario, activo FROM usuarios WHERE ID_rol = 2";
 			$resultado = $con->consultaRetorno($sql);
 			$noticias = [];
 			while($row = mysqli_fetch_object($resultado)){
